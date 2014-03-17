@@ -1,2 +1,2 @@
-load File.expand_path("../tasks/nginx_unicorn.rake", __FILE__)
+load File.expand_path("../tasks/nu.rake", __FILE__)
 
