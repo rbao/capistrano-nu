@@ -19,28 +19,13 @@ Also, for full customization, all configs can be copied to the application using
 
 Add this line to your application's Gemfile:
 
-    gem 'capistrano3-nginx_unicorn', group: :development
+    gem 'capistrano-nu', git: 'git://github.com/rbao/capistrano-nu.git', branch: 'master'
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install capistrano3-nginx_unicorn
-
-## Usage
-
-Add this line to your `Capfile`
-
-    require 'capistrano3/nginx_unicorn'
-
-Note, that following capistrano variables should be defined:
-
-    application
-    current_path
-    shared_path
-    user
+## Available Tasks
 
 You can check that new tasks are available (`cap -T`):
 
@@ -71,20 +56,30 @@ and for unicorn:
 and shared:
 
     # create logrotate record to rotate application logs
-    cap logrotate
+    cap logrotate:setup
 
-There is no need to execute any of these tasks manually.
-They will be called automatically on different deploy stages:
+## Usage
+Add this line to your `Capfile`
 
-* `nginx:setup`, `nginx:reload`, `unicorn:setup` and `logrotate` are hooked to `deploy:setup`
-* `unicorn:restart` is hooked to `deploy:restart`
+    require 'capistrano/nu'
 
-This means that if you run `cap deploy:setup`,
-nginx and unicorn will be automatically configured.
-And after each deploy, unicorn will be automatically reloaded.
+Note, that following capistrano variables should be defined:
 
-However, if you changed variables or customized templates,
-you can run any of these tasks to update configuration.
+    application
+    current_path
+    shared_path
+    user
+
+You will HAVE TO make hooks for these tasks manually for example
+
+```ruby
+namespace :deploy do
+  task :setup => ['nginx:setup', 'unicorn:setup', 'logrotate:setup', 'config:upload']
+  task :remove => ['nginx:remove', 'unicorn:remove', 'logrotate:remove']
+  task :restart => ['unicorn:restart', 'nginx:reload']
+  after :publishing, :restart
+end
+```
 
 ## Customization
 
