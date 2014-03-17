@@ -74,7 +74,7 @@ You probably want to compile the tasks together manually for example
 
 ```ruby
 namespace :deploy do
-  task :setup => ['nginx:setup', 'unicorn:setup', 'logrotate:setup', 'config:upload']
+  task :setup => ['nginx:setup', 'unicorn:setup', 'logrotate:setup']
   task :remove => ['nginx:remove', 'unicorn:remove', 'logrotate:remove']
   task :restart => ['unicorn:restart', 'nginx:reload']
   after :publishing, :restart
