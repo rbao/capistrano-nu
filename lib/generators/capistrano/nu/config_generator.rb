@@ -1,5 +1,5 @@
-module Capistrano3
-  module NginxUnicorn
+module Capistrano
+  module Nu
     module Generators
       class ConfigGenerator < Rails::Generators::Base
         desc "Create local nginx and unicorn configuration files for customization"

@@ -51,8 +51,8 @@ namespace :nginx do
     end
   end
 
-  after "deploy:check", "nginx:setup"
-  after "deploy:finished", "nginx:reload"
+  # after "deploy:check", "nginx:setup"
+  # after "deploy:finished", "nginx:reload"
 
 end
 
@@ -70,7 +70,7 @@ namespace :unicorn do
     end
   end
 
-  after "deploy:check", "unicorn:setup"
+  # after "deploy:check", "unicorn:setup"
 
 end
 
@@ -83,7 +83,7 @@ namespace :deploy do
       end
     end
   end
-  after :publishing, "deploy:restart"
+  # after :publishing, "deploy:restart"
 end
 
 desc "Setup logs rotation for nginx and unicorn"
@@ -95,13 +95,13 @@ task :logrotate do
   end
 end
 
-after "deploy:check", "logrotate"
+# after "deploy:check", "logrotate"
 
 def template(template_name, target)
   config_file = "#{fetch(:templates_path)}/#{template_name}"
   # if no customized file, proceed with default
   unless File.exists?(config_file)
-    config_file = File.join(File.dirname(__FILE__), "../../generators/capistrano3/nginx_unicorn/templates/#{template_name}")
+    config_file = File.join(File.dirname(__FILE__), "../../generators/capistrano/nu/templates/#{template_name}")
   end
   upload! StringIO.new(ERB.new(File.read(config_file)).result(binding)), target
 end
