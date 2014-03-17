@@ -78,6 +78,8 @@ namespace :unicorn do
     end
   end
 
+  # after "deploy:check", "unicorn:setup"
+
   desc "Remove unicorn initializer and app configuration"
   task :remove do
     on roles(:app) do
@@ -87,20 +89,16 @@ namespace :unicorn do
     end
   end
 
-  # after "deploy:check", "unicorn:setup"
-
-end
-
-namespace :deploy do
   %w[start stop restart].each do |command|
     desc "#{command} unicorn"
     task command do
       on roles(:app) do
-        execute "service unicorn_#{fetch(:application)} #{command}"
+        execute "sudo /etc/init.d/unicorn_#{fetch(:application)} #{command}"
       end
     end
   end
-  # after :publishing, "deploy:restart"
+  # after "deploy:publishing", "unicorn:restart"
+
 end
 
 namespace :logrotate do
