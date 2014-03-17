@@ -43,6 +43,14 @@ namespace :nginx do
     end
   end
 
+  desc "Remove nginx configuration for thisi application"
+  task :remove do
+    on roles(:web) do
+      execute "sudo rm -rf /etc/nginx/sites-enabled/#{fetch(:application)}.conf"
+      execute "sudo rm -rf /etc/nginx/sites-available/#{fetch(:application)}.conf"
+    end
+  end
+
   desc "Reload nginx configuration"
   task :reload do
     on roles(:web) do
@@ -57,7 +65,7 @@ namespace :nginx do
 end
 
 namespace :unicorn do
-  desc "Setup Unicorn initializer and app configuration"
+  desc "Setup unicorn initializer and app configuration"
   task :setup do
     on roles(:app) do
       execute "mkdir -p #{shared_path}/config"
@@ -67,6 +75,15 @@ namespace :unicorn do
       execute "chmod +x /tmp/unicorn_init"
       execute "sudo mv /tmp/unicorn_init /etc/init.d/unicorn_#{fetch(:application)}"
       execute "sudo update-rc.d -f unicorn_#{fetch(:application)} defaults"
+    end
+  end
+
+  desc "Remove unicorn initializer and app configuration"
+  task :remove do
+    on roles(:app) do
+      execute "service unicorn_#{fetch(:application)} stop"
+      execute "sudo rm -rf /etc/init.d/unicorn_#{fetch(:application)}"
+      execute "sudo update-rc.d unicorn_#{fetch(:application)} remove"
     end
   end
 
@@ -86,12 +103,20 @@ namespace :deploy do
   # after :publishing, "deploy:restart"
 end
 
-desc "Setup logs rotation for nginx and unicorn"
-task :logrotate do
-  on roles(:web, :app) do
-    template("logrotate.erb", "/tmp/#{fetch(:application)}_logrotate")
-    execute "sudo mv /tmp/#{fetch(:application)}_logrotate /etc/logrotate.d/#{fetch(:application)}"
-    execute "sudo chown root:root /etc/logrotate.d/#{fetch(:application)}"
+namespace :logrotate do
+  desc "Setup logs rotation for nginx and unicorn"
+  task :setup do
+    on roles(:web, :app) do
+      template("logrotate.erb", "/tmp/#{fetch(:application)}_logrotate")
+      execute "sudo mv /tmp/#{fetch(:application)}_logrotate /etc/logrotate.d/#{fetch(:application)}"
+      execute "sudo chown root:root /etc/logrotate.d/#{fetch(:application)}"
+    end
+  end
+
+  task :remove do
+    on roles(:web, :app) do
+      execute "sudo rm -rf /etc/logrotate.d/#{fetch(:application)}"
+    end
   end
 end
 
