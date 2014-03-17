@@ -70,7 +70,7 @@ Note, that following capistrano variables should be defined:
     shared_path
     user
 
-You will HAVE TO make hooks for these tasks manually for example
+You probably want to compile the tasks together manually for example
 
 ```ruby
 namespace :deploy do
@@ -80,6 +80,9 @@ namespace :deploy do
   after :publishing, :restart
 end
 ```
+
+This way you can just do a ```cap deploy:setup``` before a cold deployment. You probably need to setup
+passwordless sudo for this.
 
 ## Customization
 
